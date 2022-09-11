@@ -1,0 +1,9 @@
+name: WorldSwitcherGUI
+version: '${project.version}'
+main: net.cubeslide.worldswitchergui.WorldSwitcherGUI
+api-version: 1.19
+authors: [ Timeox2k ]
+website: cubeslide.net
+commands:
+  worlds:
+    aliases: [ws, worldswitchergui, worldswitcher]
