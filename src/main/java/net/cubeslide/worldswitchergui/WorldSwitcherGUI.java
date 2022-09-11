@@ -1,12 +1,19 @@
 package net.cubeslide.worldswitchergui;
 
 import net.cubeslide.worldswitchergui.commands.WorldSwitcherCommand;
-import net.cubeslide.worldswitchergui.listener.PlayerEvents;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Arrays;
 
-public final class WorldSwitcherGUI extends JavaPlugin {
+public final class WorldSwitcherGUI extends JavaPlugin implements Listener {
 
     private static WorldSwitcherGUI instance;
 
@@ -14,7 +21,7 @@ public final class WorldSwitcherGUI extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
-        getServer().getPluginManager().registerEvents(new PlayerEvents(), this);
+        getServer().getPluginManager().registerEvents(this, this);
 
         getCommand("worlds").setExecutor(new WorldSwitcherCommand());
 
@@ -26,8 +33,28 @@ public final class WorldSwitcherGUI extends JavaPlugin {
         saveConfig();
     }
 
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+
+        if (!event.getView().getTitle().equalsIgnoreCase(getConfigString("Menu.title"))) {
+            return;
+        }
+
+        ItemStack currentItem = event.getCurrentItem();
+
+        String worldName = ChatColor.stripColor(currentItem.getItemMeta().getDisplayName().replace(getConfig().getStringList("Item.text").get(0), ""));
+
+        final Player player = (Player) event.getWhoClicked();
+
+        player.teleport(Bukkit.getWorld(worldName).getSpawnLocation());
+        player.sendMessage(WorldSwitcherGUI.getPrefix() + " §aYou have been teleported to the World: §2" + worldName);
+        event.setCancelled(true);
+        player.closeInventory();
+    }
+
     public static String getPrefix() {
-        return getInstance().getConfig().getString("Plugin.prefix").replace("&", "§");
+        return getConfigString("Plugin.prefix");
     }
 
     public static String getConfigString(String path) {

@@ -35,7 +35,7 @@ public class WorldSwitcherCommand implements CommandExecutor {
             return true;
         }
 
-        Inventory inventory = Bukkit.createInventory(player, 3 * 9, worldSwitcherGUI.getConfigString("Menu.title"));
+        final Inventory inventory = Bukkit.createInventory(player, 3 * 9, worldSwitcherGUI.getConfigString("Menu.title"));
 
         for (World world : Bukkit.getWorlds()) {
 
